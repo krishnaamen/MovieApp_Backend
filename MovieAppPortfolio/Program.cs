@@ -1,9 +1,26 @@
+//using DotNetEnv;
+
+//Env.Load();
+//var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+//Console.WriteLine($"Connection String: {connectionString}");
+
+using MovieAppPortfolio.DataServiceLayer;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+builder.Services.AddDbContext<MyDbContext>();
+
+
+builder.Services.AddScoped<DataService>();
+
+
+
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
