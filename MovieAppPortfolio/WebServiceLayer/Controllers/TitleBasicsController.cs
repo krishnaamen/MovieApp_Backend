@@ -37,5 +37,28 @@ namespace MovieAppPortfolio.WebServiceLayer.Controllers
             return Ok(category);
         }
 
+      [HttpGet]
+       [Route("testdbconnection")]
+        public IActionResult TestDatabaseConnection()
+      {
+          try
+          {
+              // Simple query to test the connection
+              var canConnect = _context.Database.CanConnect();
+              if (canConnect)
+              {
+                  return Ok("Database connection successful.");
+              }
+              else
+              {
+                  return StatusCode(500, "Database connection failed.");
+              }
+          }
+          catch (Exception ex)
+          {
+              return StatusCode(500, $"Database connection error: {ex.Message}");
+          }
+        }
+
     }
 }
