@@ -1,29 +1,40 @@
 ﻿using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace MovieAppPortfolio.DataServiceLayer
 {
-    public class MyDbContext:DbContext
+    public class MyDbContext : DbContext
     {
-        public DbSet<TitleBasic> Title_Basics { get; set; }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        // Add this constructor for dependency injection
+        public MyDbContext(DbContextOptions<MyDbContext> options) : base(options)
         {
-            Env.Load();
-            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
-            Console.WriteLine($"Connection String: {connectionString}");
-            optionsBuilder.UseNpgsql(connectionString);
-            optionsBuilder.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
+        // Keep the parameterless constructor for your current configuration
+        public MyDbContext()
+        {
+        }
 
+        public DbSet<TitleBasic> Title_Basics { get; set; }
+        public DbSet<User> Users { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                Env.Load();
+                var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+                Console.WriteLine($"Connection String: {connectionString}");
+                optionsBuilder.UseNpgsql(connectionString);
+                optionsBuilder.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
+            }
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.HasDefaultSchema("movie_app");
             modelBuilder.Entity<TitleBasic>(entity =>
             {
-                entity.ToTable("title_basics","movie_app");
+                entity.ToTable("title_basics", "movie_app");
                 entity.HasKey(e => e.tconst);
 
                 entity.Property(e => e.tconst).HasColumnName("tconst");
@@ -34,9 +45,40 @@ namespace MovieAppPortfolio.DataServiceLayer
                 entity.Property(e => e.startYear).HasColumnName("start_year");
                 entity.Property(e => e.endYear).HasColumnName("end_year");
                 entity.Property(e => e.runtimeMinutes).HasColumnName("runtime_minutes");
+            });
 
+            // Configure User entity
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.ToTable("app_user", "movie_app");
+                
+                // Correct way to configure primary key with column name
+                entity.HasKey(e => e.UserId);
+                entity.Property(e => e.UserId)
+                    .HasColumnName("user_id")
+                    .ValueGeneratedOnAdd(); // Add this if it's an auto-incrementing ID
+                
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnName("username");
+                
+                entity.Property(e => e.Email)
+                    .IsRequired()
+                    .HasColumnName("email");
+                
+                entity.Property(e => e.Password)
+                    .IsRequired()
+                    .HasColumnName("password");
+                
+                entity.Property(e => e.CreatedAt)
+                    .HasDefaultValueSql("NOW()")
+                    .HasColumnName("created_at");
+                
+                // unique constraints
+                entity.HasIndex(e => e.Username).IsUnique();
+                entity.HasIndex(e => e.Email).IsUnique();
             });
         }
-
     }
 }
