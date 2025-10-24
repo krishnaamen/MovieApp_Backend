@@ -7,6 +7,7 @@ namespace MovieAppPortfolio.DataServiceLayer
     public class MyDbContext:DbContext
     {
         public DbSet<TitleBasic> Title_Basics { get; set; }
+        public DbSet<BestMatchResult> BestMatchResults { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             Env.Load();
@@ -35,6 +36,12 @@ namespace MovieAppPortfolio.DataServiceLayer
                 entity.Property(e => e.endYear).HasColumnName("end_year");
                 entity.Property(e => e.runtimeMinutes).HasColumnName("runtime_minutes");
 
+            });
+
+            modelBuilder.Entity<BestMatchResult>(entity =>
+            {
+                entity.HasNoKey(); 
+                entity.ToView("best_match_search"); 
             });
         }
 

@@ -1,9 +1,6 @@
-//using DotNetEnv;
-
-//Env.Load();
-//var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
-//Console.WriteLine($"Connection String: {connectionString}");
-
+using Mapster;
+using AutoMapper;
+using Microsoft.Extensions.DependencyInjection;
 using MovieAppPortfolio.DataServiceLayer;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,14 +12,14 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<MyDbContext>();
 
 
-builder.Services.AddScoped<DataService>();
-
-
-
+builder.Services.AddScoped<IDataService, DataService>();
 
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+
 
 var app = builder.Build();
 
