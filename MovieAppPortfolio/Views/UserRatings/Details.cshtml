@@ -1,0 +1,36 @@
+﻿@model MovieAppPortfolio.DataServiceLayer.Data.UserRating
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>UserRating</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.tconst)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.tconst)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.rating)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.rating)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.rated_date)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.rated_date)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.user_id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

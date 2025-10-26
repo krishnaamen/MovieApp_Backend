@@ -1,5 +1,6 @@
 ﻿using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
+using MovieAppPortfolio.DataServiceLayer.Data;
 
 namespace MovieAppPortfolio.DataServiceLayer
 {
@@ -17,6 +18,8 @@ namespace MovieAppPortfolio.DataServiceLayer
 
         public DbSet<TitleBasic> Title_Basics { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<UserRating> UserRatings { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
