@@ -13,14 +13,14 @@ namespace DataServiceLayer.Services.UserRatingServices
             _mydbcontext = mydbcontext;
         }
 
-        // ✅ Check if user has rated a movie
+        // Check if user has rated a movie
         public async Task<bool> CheckUserHasRatedMovie(int userId, string tconst)
         {
             return await _mydbcontext.UserRatings
                 .AnyAsync(r => r.user_id == userId && r.tconst == tconst);
         }
 
-        // ✅ Add or update rating
+        //Add or update rating
         public async Task AddOrUpdateRating(UserRating rating)
         {
             var existing = await _mydbcontext.UserRatings
@@ -41,7 +41,7 @@ namespace DataServiceLayer.Services.UserRatingServices
             await _mydbcontext.SaveChangesAsync();
         }
 
-        // ✅ Update only existing rating
+        //  Update only existing rating
         public async Task<bool> UpdateRating(int userId, string tconst, int newRating)
         {
             var rating = await _mydbcontext.UserRatings
@@ -57,7 +57,7 @@ namespace DataServiceLayer.Services.UserRatingServices
             return true;
         }
 
-        // ✅ Delete rating
+        //  Delete rating
         public async Task<bool> DeleteRating(int userId, string tconst)
         {
             var rating = await _mydbcontext.UserRatings
@@ -71,19 +71,19 @@ namespace DataServiceLayer.Services.UserRatingServices
             return true;
         }
 
-        // ✅ Get one rating by user and movie
+        //  Get one rating by user and movie
         public async Task<UserRating?> GetRatingForUserAndMovie(int userId, string tconst)
         {
             return await _mydbcontext.UserRatings
-                .Include(r => r.Title_Basics)
+                .Include(r => r.TitleBasics)
                 .FirstOrDefaultAsync(r => r.user_id == userId && r.tconst == tconst);
         }
 
-        // ✅ Get all ratings
+        // Get all ratings
         public async Task<IEnumerable<UserRating>> GetAllRatings()
         {
             return await _mydbcontext.UserRatings
-                .Include(r => r.Title_Basics)
+                .Include(r => r.TitleBasics)
                 .ToListAsync();
         }
     }

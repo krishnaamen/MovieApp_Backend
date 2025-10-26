@@ -6,10 +6,10 @@ namespace MovieAppPortfolio.DataServiceLayer
 {
     public class MyDbContext : DbContext
     {
-        // ✅ Constructor for dependency injection
+        // Constructor for dependency injection
         public MyDbContext(DbContextOptions<MyDbContext> options) : base(options) { }
 
-        // ✅ Optional: parameterless constructor for OnConfiguring fallback
+        //Optional: parameterless constructor for OnConfiguring fallback
         public MyDbContext() { }
 
         public DbSet<TitleBasic> Title_Basics { get; set; }
@@ -20,7 +20,7 @@ namespace MovieAppPortfolio.DataServiceLayer
         {
             if (!optionsBuilder.IsConfigured)
             {
-                // ✅ Load .env file and read DB_CONNECTION
+                //  Load .env file and read DB_CONNECTION
                 Env.Load();
                 var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION");
 
