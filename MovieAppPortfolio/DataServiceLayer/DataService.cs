@@ -32,7 +32,7 @@ namespace MovieAppPortfolio.DataServiceLayer
         // TitleBasic methods
         public List<TitleBasic> GetTitleBasics()
         {
-            return _context.Title_Basics
+               return _context.Title_Basics
                 .OrderBy(tb => tb.tconst)
                 .Take(50)
                 .ToList();

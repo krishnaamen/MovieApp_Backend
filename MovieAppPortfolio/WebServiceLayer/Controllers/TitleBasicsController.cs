@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using MovieAppPortfolio.DataServiceLayer;
 
 namespace MovieAppPortfolio.WebServiceLayer.Controllers
@@ -8,34 +7,29 @@ namespace MovieAppPortfolio.WebServiceLayer.Controllers
     [Route("api/titlebasics")]
     public class TitleBasicsController : ControllerBase
     {
-        private readonly DataService _dataService;
-        private readonly MyDbContext _context; // Add this
+        private readonly IDataService _dataService;
 
-        // Inject both services
-        public TitleBasicsController(DataService dataService, MyDbContext context)
+        // ✅ Use IDataService, not DataService
+        public TitleBasicsController(IDataService dataService)
         {
             _dataService = dataService;
-            _context = context; // Initialize context
         }
 
         [HttpGet]
         public IActionResult GetTitleBasics()
         {
-            var categories = _dataService.GetTitleBasics();
-            return Ok(categories);
+            var titles = _dataService.GetTitleBasics();
+            return Ok(titles);
         }
 
-        [HttpGet]
-        [Route("{tconst}")]
+        [HttpGet("{tconst}")]
         public IActionResult GetTitleBasicById(string tconst)
         {
-            var category = _dataService.GetTitleBasicById(tconst);
-            if (category == null)
-            {
+            var title = _dataService.GetTitleBasicById(tconst);
+            if (title == null)
                 return NotFound();
-            }
-            return Ok(category);
-        }
 
+            return Ok(title);
+        }
     }
 }
