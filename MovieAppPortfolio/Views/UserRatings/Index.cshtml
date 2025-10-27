@@ -19,7 +19,7 @@
                 @Html.DisplayNameFor(model => model.rating)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.rated_date)
+                @Html.DisplayNameFor(model => model.rated_at)
             </th>
             <th></th>
         </tr>
@@ -34,7 +34,7 @@
                 @Html.DisplayFor(modelItem => item.rating)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.rated_date)
+                @Html.DisplayFor(modelItem => item.rated_at)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.user_id">Edit</a> |

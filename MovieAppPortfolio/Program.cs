@@ -5,32 +5,32 @@ using DataServiceLayer.Services.UserRatingServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 🌿 Load environment variables
+// Load environment variables
 var envPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
 if (File.Exists(envPath))
 {
     Env.Load(envPath);
-    Console.WriteLine("✅ .env file loaded");
+    Console.WriteLine(" .env file loaded");
 }
 else
 {
-    Console.WriteLine($"⚠️  .env file not found at {envPath}");
+    Console.WriteLine($" .env file not found at {envPath}");
 }
 
-// 🗄️ Get connection string
+//  Get connection string
 var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION");
 if (string.IsNullOrEmpty(connectionString))
 {
     throw new InvalidOperationException("DB_CONNECTION not found in .env file!");
 }
 
-// 💾 Add database and services
+// Add database and services
 builder.Services.AddDbContext<MyDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<IDataService, DataService>();
 
-// ✅ Register your rating repository service
+// Register  rating repository service
 builder.Services.AddScoped<IRatingRepository, UserRatingServices>();
 
 builder.Services.AddControllers();
@@ -39,7 +39,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// 🚀 Run the app
+// Run app
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

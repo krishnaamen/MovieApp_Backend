@@ -2,6 +2,7 @@
 using MovieAppPortfolio.DataServiceLayer;
 using MovieAppPortfolio.DataServiceLayer.Data;
 
+
 namespace DataServiceLayer.Services.UserRatingServices
 {
     public class UserRatingServices : IRatingRepository
@@ -13,14 +14,14 @@ namespace DataServiceLayer.Services.UserRatingServices
             _mydbcontext = mydbcontext;
         }
 
-        // Check if user has rated a movie
+        //  Check user has rated movie
         public async Task<bool> CheckUserHasRatedMovie(int userId, string tconst)
         {
             return await _mydbcontext.UserRatings
                 .AnyAsync(r => r.user_id == userId && r.tconst == tconst);
         }
 
-        //Add or update rating
+        //  Add  
         public async Task AddOrUpdateRating(UserRating rating)
         {
             var existing = await _mydbcontext.UserRatings
@@ -29,19 +30,19 @@ namespace DataServiceLayer.Services.UserRatingServices
             if (existing != null)
             {
                 existing.rating = rating.rating;
-                existing.rated_date = DateTime.UtcNow;
+                existing.rated_at = DateTime.UtcNow; 
                 _mydbcontext.UserRatings.Update(existing);
             }
             else
             {
-                rating.rated_date = DateTime.UtcNow;
+                rating.rated_at = DateTime.UtcNow; 
                 await _mydbcontext.UserRatings.AddAsync(rating);
             }
 
             await _mydbcontext.SaveChangesAsync();
         }
 
-        //  Update only existing rating
+        //  Update
         public async Task<bool> UpdateRating(int userId, string tconst, int newRating)
         {
             var rating = await _mydbcontext.UserRatings
@@ -51,13 +52,13 @@ namespace DataServiceLayer.Services.UserRatingServices
                 return false;
 
             rating.rating = newRating;
-            rating.rated_date = DateTime.UtcNow;
+            rating.rated_at = DateTime.UtcNow; 
             _mydbcontext.UserRatings.Update(rating);
             await _mydbcontext.SaveChangesAsync();
             return true;
         }
 
-        //  Delete rating
+        //  Delete 
         public async Task<bool> DeleteRating(int userId, string tconst)
         {
             var rating = await _mydbcontext.UserRatings
@@ -71,7 +72,7 @@ namespace DataServiceLayer.Services.UserRatingServices
             return true;
         }
 
-        //  Get one rating by user and movie
+        //{Get one rating by user and movie}
         public async Task<UserRating?> GetRatingForUserAndMovie(int userId, string tconst)
         {
             return await _mydbcontext.UserRatings
@@ -79,7 +80,7 @@ namespace DataServiceLayer.Services.UserRatingServices
                 .FirstOrDefaultAsync(r => r.user_id == userId && r.tconst == tconst);
         }
 
-        // Get all ratings
+        //[Get all ratings]
         public async Task<IEnumerable<UserRating>> GetAllRatings()
         {
             return await _mydbcontext.UserRatings
@@ -88,3 +89,4 @@ namespace DataServiceLayer.Services.UserRatingServices
         }
     }
 }
+

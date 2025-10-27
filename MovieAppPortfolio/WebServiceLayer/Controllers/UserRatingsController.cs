@@ -4,7 +4,7 @@ using MovieAppPortfolio.DataServiceLayer.Data;
 
 namespace MovieAppPortfolio.WebServiceLayer.Controllers
 {
-    [ApiController]
+    [ApiController] 
     [Route("api/[controller]")]
     public class RatingController : ControllerBase
     {
