@@ -11,12 +11,12 @@ namespace MovieAppPortfolio.WebServiceLayer.Controllers
     [Route("api/titlebasics")]
     public class TitleBasicsController : BaseController
     {
-        // Add 'new' keyword to explicitly hide the inherited member
+        
         private new readonly IDataService _dataService;
         private readonly MyDbContext _context;
         
 
-        // Use primary constructor and pass required parameters to base
+       
         public TitleBasicsController(
             IDataService dataService,
             LinkGenerator generator,
@@ -32,7 +32,8 @@ namespace MovieAppPortfolio.WebServiceLayer.Controllers
         [HttpGet]
         public IActionResult GetTitleBasics()
         {
-            var categories = _dataService.GetTitleBasics();
+            // Explicitly cast to resolve ambiguity between IList<TitleBasic> and List<TitleBasic>
+            var categories = ((IDataService)_dataService).GetTitleBasics();
             return Ok(categories);
         }
 
@@ -40,12 +41,12 @@ namespace MovieAppPortfolio.WebServiceLayer.Controllers
         [Route("{tconst}", Name = nameof(GetTitleBasicById))]
         public IActionResult GetTitleBasicById(string tconst)
         {
-            var category = _dataService.GetTitleBasicById(tconst);
-            if (category == null)
+            var movie = _dataService.GetTitleBasicById(tconst);
+            if (movie == null)
             {
                 return NotFound();
             }
-            return Ok(category);
+            return Ok(movie);
         }
 
         private TitleBasicsModel CreateTitleBasicsModel(TitleBasic titleBasic)
@@ -78,6 +79,25 @@ namespace MovieAppPortfolio.WebServiceLayer.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, $"Error during search: {ex.Message}");
+            }
+        }
+
+        [HttpGet("paginated", Name = nameof(GetTitleBasicsPaginated))]
+        public IActionResult GetTitleBasicsPaginated([FromQuery] QueryParams queryParams)
+        {
+            try
+            {
+                var items = _dataService.GetTitleBasicsPaginated(queryParams.Page, queryParams.PageSize);
+                var totalCount = _dataService.GetTotalTitleBasicsCount();
+
+                var models = items.Select(CreateTitleBasicsModel).ToList();
+
+                var pagingResult = CreatePaging(nameof(GetTitleBasicsPaginated), models, totalCount, queryParams);
+                return Ok(pagingResult);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error retrieving data: {ex.Message}");
             }
         }
 

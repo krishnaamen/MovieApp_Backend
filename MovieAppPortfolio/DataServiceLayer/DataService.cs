@@ -17,13 +17,7 @@ namespace MovieAppPortfolio.DataServiceLayer
             _context = context;
         }
 
-        public List<TitleBasic> GetTitleBasics()
-        {
-            return _context.Title_Basics
-                .OrderBy(tb => tb.tconst)
-                .Take(50)
-                .ToList();
-        }
+     
         
         public TitleBasic? GetTitleBasicById(string tconst)
         {
@@ -31,10 +25,7 @@ namespace MovieAppPortfolio.DataServiceLayer
                 .FirstOrDefault(tb => tb.tconst == tconst);
         }
 
-        IList<TitleBasic> IDataService.GetTitleBasics()
-        {
-            return GetTitleBasics();
-        }
+     
 
         public IList<BestMatchResult> BestMatchSearch(string[] keywords)
         {
@@ -63,6 +54,29 @@ namespace MovieAppPortfolio.DataServiceLayer
                 Console.WriteLine($"Database error: {ex.Message}");
                 throw;
             }
+        }
+
+        public List<TitleBasic> GetTitleBasicsPaginated(int page, int pageSize)
+        {
+        
+            return _context.Title_Basics
+                .OrderBy(tb => tb.tconst)
+                .Skip(page * pageSize)
+                .Take(pageSize)
+                .ToList();
+        }
+        
+
+        public int GetTotalTitleBasicsCount()
+        {
+            return _context.Title_Basics.Count();
+        }
+        public List<TitleBasic> GetTitleBasics()
+        {
+            return _context.Title_Basics
+               .OrderBy(tb => tb.tconst)
+               .Take(50)
+               .ToList();
         }
     }
 }

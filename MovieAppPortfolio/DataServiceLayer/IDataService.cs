@@ -2,7 +2,9 @@
 {
     public interface IDataService
     {
-        IList<TitleBasic> GetTitleBasics();
+        List<TitleBasic> GetTitleBasics();
+        List<TitleBasic> GetTitleBasicsPaginated(int page, int pageSize);
+        int GetTotalTitleBasicsCount();
         TitleBasic? GetTitleBasicById(string tconst);
         IList<BestMatchResult> BestMatchSearch(string[] keywords);
 
