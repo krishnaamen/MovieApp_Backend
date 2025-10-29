@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieAppPortfolio.DataServiceLayer;
+using MovieAppPortfolio.DataServiceLayer.entities;
 using MovieAppPortfolio.WebServiceLayer.Models;
+using System.Security.Claims;
 
 namespace MovieAppPortfolio.WebServiceLayer.Controllers
 {
@@ -67,19 +70,38 @@ namespace MovieAppPortfolio.WebServiceLayer.Controllers
         }
 
         [HttpGet("search/{keyword}")]
-        public IActionResult BestMatchSearchSingle(string keyword)
+        [Authorize]
+        public async Task<IActionResult> BestMatchSearchSingle(string keyword)
         {
             try
             {
+                var userId = GetCurrentUserId();
                 var keywords = new[] { keyword };
                 var results = _dataService.BestMatchSearch(keywords);
-                return Ok(results);
 
+                // Track search history
+                await _dataService.AddSearchHistoryAsync(userId, keyword);
+
+                return Ok(results);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Error during search: {ex.Message}");
             }
+        }
+
+        [HttpGet("search/history")]
+        [Authorize]
+        public async Task<IActionResult> GetSearchHistory()
+        {
+            var userId = GetCurrentUserId();
+            var history = await _dataService.GetUserSearchHistoryAsync(userId);
+            return Ok(history);
+        }
+
+        private int GetCurrentUserId()
+        {
+            return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
         }
 
         [HttpGet("paginated", Name = nameof(GetTitleBasicsPaginated))]
@@ -101,7 +123,20 @@ namespace MovieAppPortfolio.WebServiceLayer.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("{tconst}/details")]
+        public IActionResult GetMovieDetails(string tconst)
+        {
+            var movieDetails = _dataService.GetMovieDetails(tconst);
+            if (movieDetails == null)
+            {
+                return NotFound();
+            }
 
+            movieDetails.Url = GetUrl(nameof(GetTitleBasicById), new { tconst = movieDetails.tconst });
+
+            return Ok(movieDetails);
+        }
 
 
 
