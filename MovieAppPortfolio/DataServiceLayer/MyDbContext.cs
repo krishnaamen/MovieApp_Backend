@@ -16,6 +16,8 @@ namespace MovieAppPortfolio.DataServiceLayer
         public DbSet<Genre> Genres { get; set; }
         public DbSet<GenreTitle> Genre_Titles { get; set; }
         public DbSet<NameBasic> Name_Basics { get; set; }
+        public DbSet<NameRating> Name_Ratings { get; set; }
+
         public DbSet<TitlePrincipals> Title_Principals { get; set; }
 
         public DbSet<User> Users { get; set; }
@@ -196,8 +198,8 @@ namespace MovieAppPortfolio.DataServiceLayer
                 // Column mappings only
                 entity.Property(e => e.NoteId).HasColumnName("note_id");
                 entity.Property(e => e.UserId).HasColumnName("user_id");
-                entity.Property(e => e.TConst).HasColumnName("tconst");
-                entity.Property(e => e.NConst).HasColumnName("nconst");
+                entity.Property(e => e.tconst).HasColumnName("tconst");
+                entity.Property(e => e.nconst).HasColumnName("nconst");
                 entity.Property(e => e.NoteText).HasColumnName("note_text");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at");
 
@@ -208,14 +210,21 @@ namespace MovieAppPortfolio.DataServiceLayer
 
                 entity.HasOne(un => un.TitleBasic)
                     .WithMany()
-                    .HasForeignKey(un => un.TConst);
+                    .HasForeignKey(un => un.tconst);
 
                 entity.HasOne(un => un.NameBasic)
                     .WithMany()
-                    .HasForeignKey(un => un.NConst);
+                    .HasForeignKey(un => un.nconst);
             });
 
-
+            modelBuilder.Entity<NameRating>(entity =>
+            {
+                entity.HasKey(e => e.nconst);
+                entity.ToTable("name_rating", "movie_app");
+                entity.Property(e => e.nconst).HasColumnName("nconst");
+                entity.Property(e => e.weightedRating).HasColumnName("weighted_rating");
+                entity.Property(e => e.lastUpdated).HasColumnName("last_updated");
+            });
 
 
 
