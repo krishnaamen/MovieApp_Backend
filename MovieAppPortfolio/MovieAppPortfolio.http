@@ -1,7 +1,6 @@
 @MovieAppPortfolio_HostAddress = http://localhost:5210
 @ContentType = application/json
-@AuthToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIzOSIsInVuaXF1ZV9uYW1lIjoia3Jpc2huYWFtZW4xIiwiZW1haWwiOiJrcmlzaG5hYW1lbkBnbWFpbC5jb20iLCJuYmYiOjE3NjIxOTE1NzUsImV4cCI6MTc2Mjc5NjM3NSwiaWF0IjoxNzYyMTkxNTc1fQ.1rRR6HmKvHuHM7XywUdDxnoFAPp3wFaipGatbqDLpf4"
-
+@AuthToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIzOSIsInVuaXF1ZV9uYW1lIjoia3Jpc2huYWFtZW4xIiwiZW1haWwiOiJrcmlzaG5hYW1lbkBnbWFpbC5jb20iLCJuYmYiOjE3NjIxOTE4MDUsImV4cCI6MTc2Mjc5NjYwNSwiaWF0IjoxNzYyMTkxODA1fQ.spLvW60odXfj3FXh3pBVVjMdEB_fTU4Q_ja3e5lZTZc
 ### Test Database Connection
 GET {{MovieAppPortfolio_HostAddress}}/api/titlebasics/testdbconnection
 Accept: {{ContentType}}
@@ -22,10 +21,6 @@ Accept: {{ContentType}}
 GET {{MovieAppPortfolio_HostAddress}}/api/titlebasics/paginated?page=0&pageSize=10
 Accept: {{ContentType}}
 
-### Search Movies (Requires Authentication)
-GET {{MovieAppPortfolio_HostAddress}}/api/titlebasics/search/inception
-Authorization: Bearer {{AuthToken}}
-Accept: {{ContentType}}
 
 ### Get Search History (Requires Authentication)
 GET {{MovieAppPortfolio_HostAddress}}/api/titlebasics/search/history
