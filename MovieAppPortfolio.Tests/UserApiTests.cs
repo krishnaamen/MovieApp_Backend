@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using MovieAppPortfolio;
 using Xunit;
@@ -11,57 +10,51 @@ namespace MovieAppPortfolio.Tests
     public class UserApiTests
     {
         [Fact]
-        public async Task RegisterAndLoginAsync_ShouldReturnTrue_WhenBothRequestsSucceed()
+        public async Task ShouldReturnTrue_WhenRegisterAndLoginWork()
         {
-            // Arrange
-            var handler = new FakeHttpMessageHandler(HttpStatusCode.OK);
-            var client = new HttpClient(handler)
+            // Fake server says everything is OK
+            var fakeHandler = new FakeHandler(HttpStatusCode.OK);
+            var client = new HttpClient(fakeHandler)
             {
                 BaseAddress = new Uri("http://localhost:5210/")
             };
 
-            var apiClient = new UserTest(client);
+            var userTest = new UserTest(client);
+            var result = await userTest.RegisterAndLoginAsync();
 
-            // Act
-            var result = await apiClient.RegisterAndLoginAsync();
-
-            // Assert
-            Assert.True(result);
+            Assert.True(result); // both worked
         }
 
         [Fact]
-        public async Task RegisterAndLoginAsync_ShouldReturnFalse_WhenRegisterFails()
+        public async Task ShouldReturnFalse_WhenRegisterFails()
         {
-            // Arrange
-            var handler = new FakeHttpMessageHandler(HttpStatusCode.BadRequest);
-            var client = new HttpClient(handler)
+            // Fake server says Bad Request
+            var fakeHandler = new FakeHandler(HttpStatusCode.BadRequest);
+            var client = new HttpClient(fakeHandler)
             {
                 BaseAddress = new Uri("http://localhost:5210/")
             };
 
-            var apiClient = new UserTest(client);
+            var userTest = new UserTest(client);
+            var result = await userTest.RegisterAndLoginAsync();
 
-            // Act
-            var result = await apiClient.RegisterAndLoginAsync();
-
-            // Assert
-            Assert.False(result);
+            Assert.False(result); // register failed
         }
     }
 
-    //  HTTP responses
-    public class FakeHttpMessageHandler : HttpMessageHandler
+    //   (OK or BadRequest)
+    public class FakeHandler : HttpMessageHandler
     {
-        private readonly HttpStatusCode _statusCode;
+        private readonly HttpStatusCode _status;
 
-        public FakeHttpMessageHandler(HttpStatusCode statusCode)
+        public FakeHandler(HttpStatusCode status)
         {
-            _statusCode = statusCode;
+            _status = status;
         }
 
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
         {
-            return Task.FromResult(new HttpResponseMessage(_statusCode));
+            return Task.FromResult(new HttpResponseMessage(_status));
         }
     }
 }
