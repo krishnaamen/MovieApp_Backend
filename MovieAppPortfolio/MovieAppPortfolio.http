@@ -47,3 +47,65 @@ Accept: {{ContentType}}
 
 GET {{MovieAppPortfolio_HostAddress}}/api/titlebasics/paginated?page=2&pageSize=5
 Accept: {{ContentType}}
+
+
+# AUTHENTICATION ENDPOINTS
+
+
+### Register New User
+# @name register
+POST {{MovieAppPortfolio_HostAddress}}/api/users/register
+Content-Type: {{ContentType}}
+
+{
+  "username": "testuser",
+  "email": "test@example.com",
+  "password": "Password123!"
+}
+
+### Save Token from Registration
+@AuthToken = {{register.response.body.$.token}}
+
+### Register Another User
+POST {{MovieAppPortfolio_HostAddress}}/api/users/register
+Content-Type: {{ContentType}}
+
+{
+  "username": "john_doe",
+  "email": "john.doe@example.com",
+  "password": "SecurePass456!"
+}
+
+### Login User
+# @name login
+POST {{MovieAppPortfolio_HostAddress}}/api/users/login
+Content-Type: {{ContentType}}
+
+{
+  "username": "testuser",
+  "password": "Password123!"
+}
+
+### Save Token from Login
+@AuthToken = {{login.response.body.$.token}}
+
+### Login with Invalid Credentials
+POST {{MovieAppPortfolio_HostAddress}}/api/users/login
+Content-Type: {{ContentType}}
+
+{
+  "username": "wronguser",
+  "password": "WrongPassword123!"
+}
+
+### Login with Missing Fields
+POST {{MovieAppPortfolio_HostAddress}}/api/users/login
+Content-Type: {{ContentType}}
+
+{
+  "username": "",
+  "password": ""
+}
+
+
+

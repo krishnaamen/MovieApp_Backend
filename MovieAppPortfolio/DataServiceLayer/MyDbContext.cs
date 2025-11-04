@@ -28,13 +28,26 @@ namespace MovieAppPortfolio.DataServiceLayer
         public DbSet<SearchHistory> Search_History { get; set; }
         public DbSet<UserNote> User_Notes { get; set; }
 
+
+
+        public MyDbContext(DbContextOptions<MyDbContext> options) : base(options)
+        {
+        }
+        public MyDbContext()
+        {
+        }
+
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            Env.Load();
-            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
-            Console.WriteLine($"Connection String: {connectionString}");
-            optionsBuilder.UseNpgsql(connectionString);
-            optionsBuilder.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
+            if (!optionsBuilder.IsConfigured)
+            {
+                Env.Load();
+                var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+                Console.WriteLine($"Connection String: {connectionString}");
+                optionsBuilder.UseNpgsql(connectionString);
+                optionsBuilder.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
+            }
         }
 
 
