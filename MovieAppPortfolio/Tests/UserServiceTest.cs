@@ -43,11 +43,7 @@ namespace Tests
                 });
 
             _client = factory.CreateClient();
-<<<<<<< HEAD
             
-=======
-
->>>>>>> b2b68f63649e5e841d40edc49a28f0f94cc93b2a
             // Get the DbContext from the service provider
             var scope = factory.Services.CreateScope();
             _context = scope.ServiceProvider.GetRequiredService<MyDbContext>();
@@ -125,28 +121,10 @@ namespace Tests
             var loginContent = new StringContent(loginJson, Encoding.UTF8, "application/json");
             var response = await _client.PostAsync("/api/Users/login", loginContent);
 
-<<<<<<< HEAD
             // Assert
             // Check if token exists in the response
         Assert.True(doc.RootElement.TryGetProperty("token", out JsonElement tokenElement));
         Assert.False(string.IsNullOrEmpty(tokenElement.GetString()));
-=======
-            // Debug: Check what the login response actually contains if it fails
-            if (!response.IsSuccessStatusCode)
-            {
-                var loginError = await response.Content.ReadAsStringAsync();
-                throw new Exception($"LOGIN FAILED ({response.StatusCode}): {loginError}");
-            }
-
-            response.EnsureSuccessStatusCode();
-
-            var responseContent = await response.Content.ReadAsStringAsync();
-            using JsonDocument doc = JsonDocument.Parse(responseContent);
-
-            // Check if token exists in the response
-            Assert.True(doc.RootElement.TryGetProperty("token", out JsonElement tokenElement));
-            Assert.False(string.IsNullOrEmpty(tokenElement.GetString()));
->>>>>>> b2b68f63649e5e841d40edc49a28f0f94cc93b2a
         }
 
         [Fact]
