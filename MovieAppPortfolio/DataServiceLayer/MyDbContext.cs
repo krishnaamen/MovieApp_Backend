@@ -1,62 +1,13 @@
 ﻿using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
-<<<<<<< HEAD
-=======
-using Microsoft.Extensions.Options;
-using MovieAppPortfolio.DataServiceLayer.entities;
-using MovieAppPortfolio.DataServiceLayer.TitlePrincipal;
-using MovieAppPortfolio.DataServiceLayer.user;
->>>>>>> bhisma/auth-test
 
 namespace MovieAppPortfolio.DataServiceLayer
 {
     public class MyDbContext : DbContext
     {
-<<<<<<< HEAD
         // Add this constructor for dependency injection
         public MyDbContext(DbContextOptions<MyDbContext> options) : base(options)
         {
-=======
-       
-        public DbSet<TitleBasic> Title_Basics { get; set; }
-        public DbSet<TitleRating> Title_Ratings { get; set; }
-        public DbSet<OmdbData> Omdb_Data { get; set; }
-        public DbSet<Genre> Genres { get; set; }
-        public DbSet<GenreTitle> Genre_Titles { get; set; }
-        public DbSet<NameBasic> Name_Basics { get; set; }
-        public DbSet<NameRating> Name_Ratings { get; set; }
-
-        public DbSet<TitlePrincipals> Title_Principals { get; set; }
-
-        public DbSet<User> Users { get; set; }
-
-
-        public DbSet<Bookmark> Bookmarks { get; set; }
-        public DbSet<UserRating> User_Ratings { get; set; }  // ADD THIS LINE
-        public DbSet<SearchHistory> Search_History { get; set; }
-        public DbSet<UserNote> User_Notes { get; set; }
-
-
-
-        public MyDbContext(DbContextOptions<MyDbContext> options) : base(options)
-        {
-        }
-        public MyDbContext()
-        {
-        }
-
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                Env.Load();
-                var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
-                Console.WriteLine($"Connection String: {connectionString}");
-                optionsBuilder.UseNpgsql(connectionString);
-                optionsBuilder.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
-            }
->>>>>>> bhisma/auth-test
         }
 
         // Keep the parameterless constructor for your current configuration
