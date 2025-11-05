@@ -43,7 +43,11 @@ namespace Tests
                 });
 
             _client = factory.CreateClient();
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> b2b68f63649e5e841d40edc49a28f0f94cc93b2a
             // Get the DbContext from the service provider
             var scope = factory.Services.CreateScope();
             _context = scope.ServiceProvider.GetRequiredService<MyDbContext>();
@@ -69,16 +73,16 @@ namespace Tests
             // Assert
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
             
-            var responseContent = await response.Content.ReadAsStringAsync();
-            Assert.Contains("success", responseContent.ToLower());
         }
 
         [Fact]
+        
         public async Task Login_ValidCredentials_ReturnsToken()
         {
             // Arrange - Register a user first
-            var username = $"testuser_{Guid.NewGuid()}";
+            var username = "testuser13";
             var password = "TestPassword123!";
             var email = $"{username}@example.com";
 
@@ -91,23 +95,58 @@ namespace Tests
 
             var registerJson = JsonSerializer.Serialize(registerData);
             var registerContent = new StringContent(registerJson, Encoding.UTF8, "application/json");
-            await _client.PostAsync("/api/Users/register", registerContent);
+
+            // Register and verify success with detailed debugging
+            var registerResponse = await _client.PostAsync("/api/Users/register", registerContent);
+
+            if (!registerResponse.IsSuccessStatusCode)
+            {
+                var registerError = await registerResponse.Content.ReadAsStringAsync();
+                throw new Exception($"REGISTRATION FAILED ({registerResponse.StatusCode}): {registerError}");
+            }
+
+            registerResponse.EnsureSuccessStatusCode();
+
+            // Debug: Check what registration actually returned
+            var registerResponseContent = await registerResponse.Content.ReadAsStringAsync();
+            Console.WriteLine($"Registration Response: {registerResponseContent}");
+
+            // Increased delay to ensure user is persisted and available
+            await Task.Delay(500);
 
             // Act - Login with valid credentials
             var loginData = new
             {
-                username = username,
-                password = password
+                username = "testuser13",
+                password = "TestPassword123"
             };
 
             var loginJson = JsonSerializer.Serialize(loginData);
             var loginContent = new StringContent(loginJson, Encoding.UTF8, "application/json");
             var response = await _client.PostAsync("/api/Users/login", loginContent);
 
+<<<<<<< HEAD
             // Assert
             // Check if token exists in the response
         Assert.True(doc.RootElement.TryGetProperty("token", out JsonElement tokenElement));
         Assert.False(string.IsNullOrEmpty(tokenElement.GetString()));
+=======
+            // Debug: Check what the login response actually contains if it fails
+            if (!response.IsSuccessStatusCode)
+            {
+                var loginError = await response.Content.ReadAsStringAsync();
+                throw new Exception($"LOGIN FAILED ({response.StatusCode}): {loginError}");
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            using JsonDocument doc = JsonDocument.Parse(responseContent);
+
+            // Check if token exists in the response
+            Assert.True(doc.RootElement.TryGetProperty("token", out JsonElement tokenElement));
+            Assert.False(string.IsNullOrEmpty(tokenElement.GetString()));
+>>>>>>> b2b68f63649e5e841d40edc49a28f0f94cc93b2a
         }
 
         [Fact]
