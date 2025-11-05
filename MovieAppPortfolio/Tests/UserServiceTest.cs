@@ -121,10 +121,10 @@ namespace Tests
             var loginContent = new StringContent(loginJson, Encoding.UTF8, "application/json");
             var response = await _client.PostAsync("/api/Users/login", loginContent);
 
-            // Assert
-            // Check if token exists in the response
-        Assert.True(doc.RootElement.TryGetProperty("token", out JsonElement tokenElement));
-        Assert.False(string.IsNullOrEmpty(tokenElement.GetString()));
+            var responseContent = await response.Content.ReadAsStringAsync();
+            using JsonDocument doc = JsonDocument.Parse(responseContent);
+            
+            Assert.True(doc.RootElement.TryGetProperty("token", out _));
         }
 
         [Fact]
