@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MovieAppPortfolio.DataServiceLayer;
 using MovieAppPortfolio.DataServiceLayer.dtos;
+using MovieAppPortfolio.WebServiceLayer.Models;
 using System.Security.Claims;
 
 namespace MovieAppPortfolio.WebServiceLayer.Controllers
@@ -47,6 +48,35 @@ namespace MovieAppPortfolio.WebServiceLayer.Controllers
 
             return Ok(response);
         }
+
+
+
+
+        [HttpPut("{tconst}")]
+        public async Task<IActionResult> UpdateRating(string tconst, [FromBody] UpdateRatingsModel updateRatingsModel)
+        {
+            var userId = GetCurrentUserId();
+            var success = await _dataService.UpdateMovieRatingAsync(userId, tconst, updateRatingsModel.Rating);
+
+            if (success)
+                return Ok(new { message = "Rating updated successfully" });
+            else
+                return BadRequest(new { message = "Failed to update rating" });
+        }
+
+        
+        [HttpDelete("{tconst}")]
+        public async Task<IActionResult> RemoveRating(string tconst)
+        {
+            var userId = GetCurrentUserId();
+            var success = await _dataService.RemoveRatingAsync(userId, tconst);
+
+            if (success)
+                return Ok(new { message = "Rating removed successfully" });
+            else
+                return NotFound(new { message = "Rating not found" });
+        }
+
 
         [HttpGet("movie/{tconst}")]
         public async Task<IActionResult> GetMyRatingForMovie(string tconst)

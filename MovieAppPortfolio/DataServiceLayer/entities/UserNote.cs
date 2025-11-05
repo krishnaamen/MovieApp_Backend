@@ -6,8 +6,8 @@ namespace MovieAppPortfolio.DataServiceLayer.entities
     {
         public int NoteId { get; set; }
         public int UserId { get; set; }
-        public string? TConst { get; set; }
-        public string? NConst { get; set; }
+        public string? tconst { get; set; }
+        public string? nconst { get; set; }
         public string NoteText { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
 
