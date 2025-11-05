@@ -1,6 +1,112 @@
 @MovieAppPortfolio_HostAddress = http://localhost:5210
+@ContentType = application/json
+@AuthToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIzOSIsInVuaXF1ZV9uYW1lIjoia3Jpc2huYWFtZW4xIiwiZW1haWwiOiJrcmlzaG5hYW1lbkBnbWFpbC5jb20iLCJuYmYiOjE3NjIxOTE4MDUsImV4cCI6MTc2Mjc5NjYwNSwiaWF0IjoxNzYyMTkxODA1fQ.spLvW60odXfj3FXh3pBVVjMdEB_fTU4Q_ja3e5lZTZc
+### Test Database Connection
+GET {{MovieAppPortfolio_HostAddress}}/api/titlebasics/testdbconnection
+Accept: {{ContentType}}
 
-GET {{MovieAppPortfolio_HostAddress}}/weatherforecast/
-Accept: application/json
+### Get All Title Basics (First 50)
+GET {{MovieAppPortfolio_HostAddress}}/api/titlebasics
+Accept: {{ContentType}}
 
-###
+### Get Title Basic by ID
+GET {{MovieAppPortfolio_HostAddress}}/api/titlebasics/tt0052520
+Accept: {{ContentType}}
+
+### Get Movie Details by ID
+GET {{MovieAppPortfolio_HostAddress}}/api/titlebasics/tt0052520/details
+Accept: {{ContentType}}
+
+### Get Paginated Title Basics
+GET {{MovieAppPortfolio_HostAddress}}/api/titlebasics/paginated?page=0&pageSize=10
+Accept: {{ContentType}}
+
+
+### Get Search History (Requires Authentication)
+GET {{MovieAppPortfolio_HostAddress}}/api/titlebasics/search/history
+Authorization: Bearer {{AuthToken}}
+Accept: {{ContentType}}
+
+### Test with different movie IDs
+GET {{MovieAppPortfolio_HostAddress}}/api/titlebasics/tt0468569
+Accept: {{ContentType}}
+
+GET {{MovieAppPortfolio_HostAddress}}/api/titlebasics/tt1375666
+Accept: {{ContentType}}
+
+GET {{MovieAppPortfolio_HostAddress}}/api/titlebasics/tt0137523
+Accept: {{ContentType}}
+
+### Test invalid movie ID
+GET {{MovieAppPortfolio_HostAddress}}/api/titlebasics/tt999999999
+Accept: {{ContentType}}
+
+### Test pagination with different parameters
+GET {{MovieAppPortfolio_HostAddress}}/api/titlebasics/paginated?page=1&pageSize=20
+Accept: {{ContentType}}
+
+GET {{MovieAppPortfolio_HostAddress}}/api/titlebasics/paginated?page=2&pageSize=5
+Accept: {{ContentType}}
+
+
+# AUTHENTICATION ENDPOINTS
+
+
+### Register New User
+# @name register
+POST {{MovieAppPortfolio_HostAddress}}/api/users/register
+Content-Type: {{ContentType}}
+
+{
+  "username": "testuser",
+  "email": "test@example.com",
+  "password": "Password123!"
+}
+
+### Save Token from Registration
+@AuthToken = {{register.response.body.$.token}}
+
+
+### Register Another User
+POST {{MovieAppPortfolio_HostAddress}}/api/users/register
+Content-Type: {{ContentType}}
+
+{
+  "username": "john_doe",
+  "email": "john.doe@example.com",
+  "password": "SecurePass456!"
+}
+
+### Login User
+# @name login
+POST {{MovieAppPortfolio_HostAddress}}/api/users/login
+Content-Type: {{ContentType}}
+
+{
+  "username": "testuser",
+  "password": "Password123!"
+}
+
+### Save Token from Login
+@AuthToken = {{login.response.body.$.token}}
+
+### Login with Invalid Credentials
+POST {{MovieAppPortfolio_HostAddress}}/api/users/login
+Content-Type: {{ContentType}}
+
+{
+  "username": "wronguser",
+  "password": "WrongPassword123!"
+}
+
+### Login with Missing Fields
+POST {{MovieAppPortfolio_HostAddress}}/api/users/login
+Content-Type: {{ContentType}}
+
+{
+  "username": "",
+  "password": ""
+}
+
+
+
