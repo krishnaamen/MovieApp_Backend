@@ -8,24 +8,45 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Tests
 {
-    public class AuthApiTests : IClassFixture<WebApplicationFactory<Program>>, IDisposable
+    public class AuthApiTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
         private readonly MyDbContext _context;
 
-        public AuthApiTests(WebApplicationFactory<Program> factory)
+        public AuthApiTests()
         {
+            // Create WebApplicationFactory with in-memory database configuration
+            var factory = new WebApplicationFactory<Program>()
+                .WithWebHostBuilder(builder =>
+                {
+                    builder.ConfigureServices(services =>
+                    {
+                        // Remove the existing DbContext registration
+                        var descriptor = services.SingleOrDefault(
+                            d => d.ServiceType == typeof(DbContextOptions<MyDbContext>));
+                        if (descriptor != null)
+                        {
+                            services.Remove(descriptor);
+                        }
+
+                        // Add in-memory database
+                        services.AddDbContext<MyDbContext>(options =>
+                        {
+                            options.UseInMemoryDatabase($"AuthTestDb_{Guid.NewGuid()}");
+                        });
+                    });
+                });
+
             _client = factory.CreateClient();
             
-            // Set up in-memory database
-            var options = new DbContextOptionsBuilder<MyDbContext>()
-                .UseInMemoryDatabase(databaseName: $"AuthTestDb_{Guid.NewGuid()}")
-                .Options;
-            
-            _context = new MyDbContext(options);
+            // Get the DbContext from the service provider
+            var scope = factory.Services.CreateScope();
+            _context = scope.ServiceProvider.GetRequiredService<MyDbContext>();
         }
 
         [Fact]
@@ -84,12 +105,9 @@ namespace Tests
             var response = await _client.PostAsync("/api/Users/login", loginContent);
 
             // Assert
-            response.EnsureSuccessStatusCode();
-            
-            var responseContent = await response.Content.ReadAsStringAsync();
-            using JsonDocument doc = JsonDocument.Parse(responseContent);
-            
-            Assert.True(doc.RootElement.TryGetProperty("token", out _));
+            // Check if token exists in the response
+        Assert.True(doc.RootElement.TryGetProperty("token", out JsonElement tokenElement));
+        Assert.False(string.IsNullOrEmpty(tokenElement.GetString()));
         }
 
         [Fact]
@@ -115,6 +133,7 @@ namespace Tests
         public void Dispose()
         {
             _context?.Dispose();
+            _client?.Dispose();
         }
     }
 }
