@@ -66,6 +66,7 @@ Content-Type: {{ContentType}}
 ### Save Token from Registration
 @AuthToken = {{register.response.body.$.token}}
 
+
 ### Register Another User
 POST {{MovieAppPortfolio_HostAddress}}/api/users/register
 Content-Type: {{ContentType}}
