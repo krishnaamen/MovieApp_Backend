@@ -5,7 +5,7 @@ namespace MovieAppPortfolio.DataServiceLayer
 {
     public interface IDataService
     {
-        List<TitleBasic> GetTitleBasics();
+        List<MovieDto> GetTitleBasics();
         List<TitleBasic> GetTitleBasicsPaginated(int page, int pageSize);
         int GetTotalTitleBasicsCount();
         TitleBasic? GetTitleBasicById(string tconst);

@@ -81,6 +81,53 @@ namespace MovieAppPortfolio.DataServiceLayer
                .ToList();
         }
 
+        List<MovieDto> IDataService.GetTitleBasics()
+        {
+        
+        // Pull the base title list (limit as needed)
+        var titleBasics = _context.Title_Basics
+                .OrderBy(tb => tb.tconst)
+                .Take(50)
+                .ToList();
+
+            var result = new List<MovieDto>();
+
+            foreach (var movie in titleBasics)
+            {
+                var rating = _context.Title_Ratings
+                    .FirstOrDefault(tr => tr.tconst == movie.tconst);
+
+                var omdbData = _context.Omdb_Data
+                    .FirstOrDefault(od => od.tconst == movie.tconst);
+
+                // Fix: Only call GetMovieGenres if movie.tconst is not null, otherwise use an empty list
+                var genres = movie.tconst != null ? GetMovieGenres(movie.tconst) : new List<string>();
+
+                result.Add(new MovieDto
+                {
+                    tconst = movie.tconst,
+                    titleType = movie.titleType,
+                    primaryTitle = movie.primaryTitle,
+                    originalTitle = movie.originalTitle,
+                    isAdult = movie.isAdult,
+                    startYear = movie.startYear,
+                    endYear = movie.endYear,
+                    runtimeMinutes = movie.runtimeMinutes,
+                    AverageRating = rating?.averageRating,
+                    NumVotes = rating?.numVotes,
+                    Plot = omdbData?.plot,
+                    Poster = omdbData?.poster,
+                    Genres = genres
+                });
+            }
+
+            return result;
+        }
+
+
+
+        
+
 
         // This method is returns the details of one particular movie, This contains the plot and posters and genres which will be useful for the frontend for the single movie details page
         public MovieDto? GetMovieDetails(string tconst)
@@ -555,10 +602,7 @@ namespace MovieAppPortfolio.DataServiceLayer
                 .AnyAsync(ur => ur.UserId == userId && ur.TConst == tconst);
         }
 
-
-
-
-
+     
     }
 
 

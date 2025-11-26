@@ -35,9 +35,8 @@ namespace MovieAppPortfolio.WebServiceLayer.Controllers
         [HttpGet]
         public IActionResult GetTitleBasics()
         {
-            // Explicitly cast to resolve ambiguity between IList<TitleBasic> and List<TitleBasic>
-            var categories = ((IDataService)_dataService).GetTitleBasics();
-            return Ok(categories);
+            var movies = _dataService.GetTitleBasics();
+            return Ok(movies);
         }
 
         [HttpGet]
