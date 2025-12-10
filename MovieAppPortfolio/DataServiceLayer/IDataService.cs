@@ -6,7 +6,7 @@ namespace MovieAppPortfolio.DataServiceLayer
     public interface IDataService
     {
         List<MovieDto> GetTitleBasics();
-        List<TitleBasic> GetTitleBasicsPaginated(int page, int pageSize);
+        List<MovieDto> GetTitleBasicsPaginated(int page, int pageSize);
         int GetTotalTitleBasicsCount();
         TitleBasic? GetTitleBasicById(string tconst);
         IList<BestMatchResult> BestMatchSearch(string[] keywords);
@@ -21,7 +21,7 @@ namespace MovieAppPortfolio.DataServiceLayer
         Task<bool> IsMovieBookmarkedAsync(int userId, string tconst);
 
 
-
+        List<TitlePrincipalDto> GetTitlePrincipalsByTitle(string tconst);
 
 
 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieAppPortfolio.DataServiceLayer;
+using MovieAppPortfolio.DataServiceLayer.dtos;
 using MovieAppPortfolio.DataServiceLayer.entities;
 using MovieAppPortfolio.WebServiceLayer.Models;
 using System.Security.Claims;
@@ -51,22 +52,27 @@ namespace MovieAppPortfolio.WebServiceLayer.Controllers
             return Ok(movie);
         }
 
-        private TitleBasicsModel CreateTitleBasicsModel(TitleBasic titleBasic)
+        private TitleBasicsModel CreateTitleBasicsModel(MovieDto dto)
         {
-            var model = new TitleBasicsModel
+            return new TitleBasicsModel
             {
-                tconst = titleBasic.tconst,
-                titleType = titleBasic.titleType,
-                primaryTitle = titleBasic.primaryTitle,
-                originalTitle = titleBasic.originalTitle,
-                isAdult = titleBasic.isAdult,
-                startYear = titleBasic.startYear,
-                endYear = titleBasic.endYear,
-                runtimeMinutes = titleBasic.runtimeMinutes,
-                Url = GetUrl(nameof(GetTitleBasicById), new { tconst = titleBasic.tconst })
+                tconst = dto.tconst,
+                titleType = dto.titleType,
+                primaryTitle = dto.primaryTitle,
+                originalTitle = dto.originalTitle,
+                isAdult = dto.isAdult,
+                startYear = dto.startYear,
+                endYear = dto.endYear,
+                runtimeMinutes = dto.runtimeMinutes,
+                AverageRating = (double?)dto.AverageRating,
+                NumVotes = dto.NumVotes,
+                Plot = dto.Plot,
+                Poster = dto.Poster,
+                Genres = dto.Genres,
+                Url = GetUrl(nameof(GetTitleBasicById), new { tconst = dto.tconst })
             };
-            return model;
         }
+
 
         [HttpGet("search/{keyword}")]
         [Authorize]
@@ -111,7 +117,9 @@ namespace MovieAppPortfolio.WebServiceLayer.Controllers
                 var items = _dataService.GetTitleBasicsPaginated(queryParams.Page, queryParams.PageSize);
                 var totalCount = _dataService.GetTotalTitleBasicsCount();
 
-                var models = items.Select(CreateTitleBasicsModel).ToList();
+                var models = items
+                    .Select(CreateTitleBasicsModel)
+                    .ToList();
 
                 var pagingResult = CreatePaging(nameof(GetTitleBasicsPaginated), models, totalCount, queryParams);
                 return Ok(pagingResult);
@@ -121,6 +129,7 @@ namespace MovieAppPortfolio.WebServiceLayer.Controllers
                 return StatusCode(500, $"Error retrieving data: {ex.Message}");
             }
         }
+
 
         [HttpGet]
         [Route("{tconst}/details")]
@@ -139,7 +148,13 @@ namespace MovieAppPortfolio.WebServiceLayer.Controllers
 
 
 
-
+        
+        [HttpGet("{tconst}/principals")]
+        public IActionResult GetPrincipalsByTitle(string tconst)
+        {
+            var principals = _dataService.GetTitlePrincipalsByTitle(tconst);
+            return Ok(principals);
+        }
 
 
 

@@ -58,15 +58,57 @@ namespace MovieAppPortfolio.DataServiceLayer
 
 
         // This method is used to fecth the movie list with page number and page size,this is paging requirement implementation.
-        public List<TitleBasic> GetTitleBasicsPaginated(int page, int pageSize)
+        public List<MovieDto> GetTitleBasicsPaginated(int page, int pageSize)
         {
-        
-            return _context.Title_Basics
+
+            var titleBasics =  _context.Title_Basics
                 .OrderBy(tb => tb.tconst)
                 .Skip(page * pageSize)
                 .Take(pageSize)
                 .ToList();
+
+
+
+
+            var result = new List<MovieDto>();
+            //append the other details to movie dto
+            foreach (var movie in titleBasics)
+            {
+                var rating = _context.Title_Ratings
+                    .FirstOrDefault(tr => tr.tconst == movie.tconst);
+
+                var omdbData = _context.Omdb_Data
+                    .FirstOrDefault(od => od.tconst == movie.tconst);
+
+                // Fix: Only call GetMovieGenres if movie.tconst is not null, otherwise use an empty list
+                var genres = movie.tconst != null ? GetMovieGenres(movie.tconst) : new List<string>();
+
+                result.Add(new MovieDto
+                {
+                    tconst = movie.tconst,
+                    titleType = movie.titleType,
+                    primaryTitle = movie.primaryTitle,
+                    originalTitle = movie.originalTitle,
+                    isAdult = movie.isAdult,
+                    startYear = movie.startYear,
+                    endYear = movie.endYear,
+                    runtimeMinutes = movie.runtimeMinutes,
+                    AverageRating = rating?.averageRating,
+                    NumVotes = rating?.numVotes,
+                    Plot = omdbData?.plot,
+                    Poster = omdbData?.poster,
+                    Genres = genres
+                });
+            }
+
+            return result;
         }
+
+
+
+
+
+
         
 
         public int GetTotalTitleBasicsCount()
@@ -87,11 +129,11 @@ namespace MovieAppPortfolio.DataServiceLayer
         // Pull the base title list (limit as needed)
         var titleBasics = _context.Title_Basics
                 .OrderBy(tb => tb.tconst)
-                .Take(50)
+                .Take(150)
                 .ToList();
 
             var result = new List<MovieDto>();
-
+            //append the other details to movie dto
             foreach (var movie in titleBasics)
             {
                 var rating = _context.Title_Ratings
@@ -602,7 +644,27 @@ namespace MovieAppPortfolio.DataServiceLayer
                 .AnyAsync(ur => ur.UserId == userId && ur.TConst == tconst);
         }
 
-     
+        public List<TitlePrincipalDto> GetTitlePrincipalsByTitle(string tconst)
+        {
+            if (string.IsNullOrWhiteSpace(tconst))
+                return new List<TitlePrincipalDto>();
+
+            var connectionString = _context.Database.GetConnectionString();
+
+            using (var connection = new NpgsqlConnection(connectionString))
+            {
+                connection.Open();
+
+                var sql = @"
+            SELECT tconst, nconst, ordering, category, job, characters
+            FROM movie_app.title_principals
+            WHERE tconst = @tconst
+            ORDER BY ordering";
+
+                var result = connection.Query<TitlePrincipalDto>(sql, new { tconst }).ToList();
+                return result;
+            }
+        }
     }
 
 
